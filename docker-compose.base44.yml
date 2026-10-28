@@ -1,0 +1,29 @@
+name: base44-app
+
+services:
+  web:
+    image: node:22-slim
+    working_dir: /app
+    command: ["node", "--watch", "server.js"]
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - BASE44_PREVIEW_MODE
+    labels:
+      base44.project: "hi base44"
+      base44.kind: web
+      base44.port: 3000
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: on-failure
